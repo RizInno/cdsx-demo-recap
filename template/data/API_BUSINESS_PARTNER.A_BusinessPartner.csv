@@ -1,0 +1,2 @@
+BusinessPartner,Customer,Supplier,BusinessPartnerCategory,BusinessPartnerFullName,BusinessPartnerUUID,FirstName,MiddleName,LastName,BusinessPartnerType,ETag,CreatedByUser,CreationDate,CreationTime,LastChangedByUser,LastChangeDate,LastChangeTime
+10000691,,,1,Johnny Appleseed,0ebbc7e2-656f-1eed-bb98-5f76876e2873,Johnny,,Appleseed,,JCAILAN20230507081331,JCAILAN,2018-09-11,18:22:18,JCAILAN,2018-09-11,18:22:18
