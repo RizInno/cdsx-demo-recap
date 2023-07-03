@@ -6,6 +6,7 @@
 	"license": "UNLICENSED",
 	"private": true,
 	"dependencies": {
+		"@rizing/cds-extension": "^0.7.63",
 		"@sap-cloud-sdk/http-client": "^3.2.0",
 		"@sap/cds": "^6",
 		"express": "^4"
@@ -17,6 +18,9 @@
 		"start": "cds run"
 	},
 	"cds": {
+		"features": {
+			"fetch_csrf": true
+		},
 		"requires": {
 			"API_BUSINESS_PARTNER": {
 				"kind": "odata-v2",
