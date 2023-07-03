@@ -151,7 +151,7 @@ module.exports = async service => {
 > cds watch --profile backend
 ```
 
-### 4 Add `odata.draft.enabled` annotation
+### 4. Add `odata.draft.enabled` annotation
 
 - Update the service model:
 
@@ -176,3 +176,112 @@ service BusinessPartnerService {
 - Results into an error:
 
 ![](assets/read-error.png)
+
+## CAP using CDSX
+
+### 1. Install CDSX
+
+- Install dependency
+
+```shell
+> npm install @rizing/cds-extension
+```
+
+- Bootstrap CDSX using `srv/server.js`
+
+```javascript
+const cdsx = require("@rizing/cds-extension");
+
+cds.on("bootstrap", () => {
+	cdsx.load({ config: true });
+});
+```
+
+- Add CSRF Token handling flag in CDS config under `package.json` file:
+
+```json
+"features": {
+	"fetch_csrf": true
+}
+```
+
+### 2. Create CDS Models
+
+- Create Data Models in `schema.cds` (i.e. **Shadow Persistence Entity**)
+
+```sql
+context remote {
+
+    @cdsx.api: 'API_BUSINESS_PARTNER'
+    entity A_BusinessPartner {
+            @cdsx.object.key
+        key BusinessPartner         : String(10);
+            Customer                : String(10);
+            Supplier                : String(10);
+
+            @mandatory
+            BusinessPartnerCategory : String(1);
+            BusinessPartnerFullName : String(81);
+            BusinessPartnerUUID     : UUID;
+            FirstName               : String(40);
+            MiddleName              : String(40);
+
+            @mandatory
+            LastName                : String(40);
+            BusinessPartnerType     : String(4);
+            ETag                    : String(26);
+            CreatedByUser           : String(12);
+            CreationDate            : Date;
+            CreationTime            : Time;
+            LastChangedByUser       : String(12);
+            LastChangeDate          : Date;
+            LastChangeTime          : Time;
+    }
+
+}
+```
+
+- Update Service Model to use the **Shadow Persistence Entity**
+
+```sql
+using {remote} from '../db/schema';
+
+service BusinessPartnerService {
+
+    @odata.draft.enabled
+    entity A_BusinessPartner as projection on remote.A_BusinessPartner;
+
+}
+```
+
+- Delete the custom handler implementation `srv/BusinessPartner.js`
+
+### 3. [Optional] Use `.env` to store credentials
+
+- Remote source config in `package.json` should use placeholders for environment variables like the ones below:
+
+```json
+"requires": {
+	"API_BUSINESS_PARTNER": {
+		"kind": "odata-v2",
+		"model": "srv/external/API_BUSINESS_PARTNER",
+		"[backend]": {
+			"credentials": {
+				"url": "{{s4h_hostname}}/sap/opu/odata/sap/API_BUSINESS_PARTNER",
+				"username": "{{s4h_username}}",
+				"password": "{{s4h_password}}"
+			}
+		}
+	}
+}
+```
+
+- Create a `.env` file to store the environment variables with the following template (and provide your on-premise system credentials):
+
+```properties
+s4h_hostname=
+s4h_username=
+s4h_password=
+```
+
+> **NOTE:** The `.env` file should be ignored by git since it contains sensitive information.
