@@ -1,6 +1,8 @@
 # CDSX Demo
 
-## 1. Create CAP project
+## CAP using external service
+
+### 1. Create CAP project
 
 - Run CLI commands below:
 
@@ -13,7 +15,7 @@
 > npm install
 ```
 
-## 2. Add external service
+### 2. Add external service
 
 - Import an EDMX file generated from an S/4HANA OData Service, here we are using [API_BUSINESS_PARTNER.xml](template/API_BUSINESS_PARTNER.xml). Copy the file from [template](template) folder to your project folder, then execute the command below:
 
@@ -21,7 +23,7 @@
 > cds import API_BUSINESS_PARTNER.xml
 ```
 
-## 3. Create CDS models, handlers, and annotations
+### 3. Create CDS models, handlers, and annotations
 
 - Create the service model `BusinessPartner.cds`
 
@@ -148,3 +150,29 @@ module.exports = async service => {
 ```shell
 > cds watch --profile backend
 ```
+
+### 4 Add `odata.draft.enabled` annotation
+
+- Update the service model:
+
+```sql
+using {API_BUSINESS_PARTNER as external} from './external/API_BUSINESS_PARTNER';
+
+
+service BusinessPartnerService {
+
+    @odata.draft.enabled
+    entity A_BusinessPartner as projection on external.A_BusinessPartner;
+
+}
+```
+
+- Test the app while connected to backend:
+
+```shell
+> cds watch --profile backend
+```
+
+- Results into an error:
+
+![](assets/read-error.png)
