@@ -21,7 +21,7 @@
 > cds import API_BUSINESS_PARTNER.xml
 ```
 
-## 3. Create CDS models and annotations
+## 3. Create CDS models, handlers, and annotations
 
 - Create the service model `BusinessPartner.cds`
 
@@ -105,4 +105,46 @@ annotate service.A_BusinessPartner with @(
 
 - [Optional] Copy the [_i18n/i18n.properties](_i18n/i18n.properties) of this project to your own project.
 
-- Test the app using `Fiori Preview`
+- Install SAP Cloud SDK Client:
+
+```shell
+> npm install @sap-cloud-sdk/http-client
+```
+
+- Update cds config in `package.json` file with remote connection credentials:
+
+```json
+"cds": {
+	"requires": {
+		"API_BUSINESS_PARTNER": {
+			"kind": "odata-v2",
+			"model": "srv/external/API_BUSINESS_PARTNER",
+			"[backend]": {
+				"credentials": {
+					"url": "{{s4h_hostname}}/sap/opu/odata/sap/API_BUSINESS_PARTNER",
+					"username": "{{s4h_username}}",
+					"password": "{{s4h_password}}"
+				}
+			}
+		}
+	}
+}
+```
+
+- Create handler implementation
+
+```javascript
+module.exports = async service => {
+	const external = await cds.connect.to("API_BUSINESS_PARTNER");
+
+	service.on("READ", "A_BusinessPartner", async context => {
+		return await external.run(context.query);
+	});
+};
+```
+
+- Test the app using `Fiori Preview`, but execute the command below first:
+
+```shell
+> cds watch --profile backend
+```
