@@ -7,4 +7,6 @@
 > cds init
 # initialize git
 > git init
+# install dependencies
+> npm install
 ```
