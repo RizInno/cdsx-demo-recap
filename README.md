@@ -1,4 +1,7 @@
-# CDSX Demo
+# CDSX Demo - reCAP 2023
+
+![](assets/recap-topic.png)
+
 
 ## CAP using external service
 
